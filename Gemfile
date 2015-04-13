@@ -1,4 +1,10 @@
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in topten.gemspec
-gemspec
+gem 'bundler', '~> 1.7'
+gem 'rake', '~> 10.0'
+
+group :test do
+  gem 'rspec', '~> 3.2'
+  gem 'simplecov', '~> 0.9'
+end
+
