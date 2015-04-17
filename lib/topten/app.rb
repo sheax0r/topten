@@ -1,15 +1,17 @@
 require 'topten/server'
 require 'topten/consumer'
 require 'topten/log_helper'
+require 'topten/hashtag_store'
 
 module Topten
   class App
     include Topten::LogHelper
-    attr_reader :server, :consumer
+    attr_reader :server, :consumer, :tag_store
 
     def initialize
-      @server = Topten::Server.new
-      @consumer = Topten::Consumer.new
+      @tag_store = HashtagStore.new
+      @server = Server.new tag_store
+      @consumer = Consumer.new tag_store
     end
 
     def run

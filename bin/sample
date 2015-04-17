@@ -2,25 +2,9 @@
 # Demonstration of how to use the api
 $: << (File.join __dir__, '..', 'lib')
 require 'net/https'
-require 'uri'
-require 'yaml'
-require 'topten/oauth_helper'
+require 'json'
+require 'topten/twitter_stream'
 
-include Topten::OAuthHelper
-
-uri = URI.parse('https://stream.twitter.com/1.1/statuses/sample.json')
-uri.query = URI.encode_www_form( :delimited=>'length' )
-
-http = Net::HTTP.new(uri.host, uri.port)
-http.use_ssl = true
-http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-
-request = Net::HTTP::Get.new(uri.request_uri) 
-sign_request(request, YAML.load(File.read('oauth.yml')))
-
-http.request(request) do |response|
-  response.read_body do |chunk|
-    puts chunk
-  end
+Topten::TwitterStream.new.run do |msg|
+  puts JSON.parse msg
 end
-
