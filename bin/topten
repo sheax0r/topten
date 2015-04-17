@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+$: << (File.join __dir__, '..', 'lib')
+require 'topten/app'
+Topten::App.new.run
