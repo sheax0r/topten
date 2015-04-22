@@ -47,7 +47,7 @@ module Topten
 
       # Trim "keep-alive" newlines
       while (line_break == 0) 
-        stream_buffer = stream_buffer.drop 2
+        stream_buffer.shift 2
         line_break = stream_buffer.index("\r")
       end
       return nil if line_break.nil?
@@ -66,7 +66,7 @@ module Topten
       msg = stream_buffer[msg_start..msg_end].join
 
       # Move the buffer along, return the message
-      stream_buffer = stream_buffer.drop msg_end + 2
+      stream_buffer.shift msg_end + 2
       msg
     end
   end

@@ -19,14 +19,12 @@ module Topten
 
     def run
       TwitterStream.new.run do |msg|
-        begin
-          json = JSON.parse msg, symbolize_names: true
-          date = json[:created_at]
-          if date
-            date = DateTime.parse json[:created_at]
-            json[:entities][:hashtags].each do |tag|
-              tag_store.add(Hashtag.new(tag[:text], date))
-            end
+        json = JSON.parse msg, symbolize_names: true
+        date = json[:created_at]
+        if date
+          date = DateTime.parse json[:created_at]
+          json[:entities][:hashtags].each do |tag|
+            tag_store.add(Hashtag.new(tag[:text], date))
           end
         end
       end
