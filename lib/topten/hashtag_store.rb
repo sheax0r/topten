@@ -1,4 +1,5 @@
 require 'thread'
+require 'topten/hashtag'
 require 'topten/log_helper'
 
 module Topten
@@ -30,11 +31,4 @@ module Topten
     end
   end
 
-  class Hashtag
-    attr_reader :date, :name
-    def initialize(date, name)
-      @date = date
-      @name = name
-    end
-  end
 end
