@@ -1,12 +1,15 @@
 require 'json'
-require 'topten/log_helper'
 require 'topten/hashtag_store'
+require 'topten/log_helper'
+require 'topten/oauth_helper'
+require 'topten/twitter_stream'
 
 module Topten
   include LogHelper
   include Topten::OAuthHelper
 
   class Consumer
+    include LogHelper
 
     attr_reader :tag_store
 
@@ -15,11 +18,16 @@ module Topten
     end
 
     def run
-      twitter_stream.new.run do |msg|
-        json = JSON.parse msg, symbolize_names: true
-        date = DateTime.parse json[:created_at] 
-        json[:hashtags].each do |value|
-          hashtag_store.add(Hashtag.new(date, value))
+      TwitterStream.new.run do |msg|
+        begin
+          json = JSON.parse msg, symbolize_names: true
+          date = json[:created_at]
+          if date
+            date = DateTime.parse json[:created_at]
+            json[:entities][:hashtags].each do |tag|
+              tag_store.add(Hashtag.new(date, tag[:text]))
+            end
+          end
         end
       end
     end
@@ -31,4 +39,3 @@ module Topten
     end
   end
 end
-
