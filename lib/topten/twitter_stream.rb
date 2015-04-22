@@ -24,32 +24,23 @@ module Topten
       http.request(request) do |response|
         response.read_body do |chunk|
           stream_buffer.concat chunk.split(//)
-          loop do
-            message = next_message(stream_buffer)
-            if message
-              yield message
-            else 
-              break
-            end
+          while (message = next_message stream_buffer)
+            yield message
           end
         end
       end
     end
 
-    private
-
     # Parse the next message from the buffer.
     def next_message(stream_buffer)
+      # Trim newlines
+      while stream_buffer[0..1].join == "\r\n"
+        stream_buffer.shift 2
+      end
+
       # Find the line break after the length header.
       # Bail if there isn't one in the current buffer.
       line_break = stream_buffer.index("\r")
-      return nil if line_break.nil?
-
-      # Trim "keep-alive" newlines
-      while (line_break == 0) 
-        stream_buffer.shift 2
-        line_break = stream_buffer.index("\r")
-      end
       return nil if line_break.nil?
 
       # Get the length header.
@@ -58,15 +49,15 @@ module Topten
 
       # Bail if remaining buffer size is less than message length,
       # (include extra space for linebreak and length header).
-      return nil if (stream_buffer.size - msg_length_string.size - 2) <= msg_length 
+      return nil if (stream_buffer.size - msg_length_string.size - 2) < msg_length 
 
       # Extract the message
       msg_start = line_break + 2
-      msg_end = msg_start + msg_length - 2
+      msg_end = msg_start + msg_length - 1
       msg = stream_buffer[msg_start..msg_end].join
 
       # Move the buffer along, return the message
-      stream_buffer.shift msg_end + 2
+      stream_buffer.shift msg_end + 1
       msg
     end
   end
