@@ -30,8 +30,8 @@ module Topten
         it 'should save a tag' do
           expect(tag_store).to receive(:add).with(
             Hashtag.new(
-              DateTime.parse(created_at),
-              'hashtag'))
+              'hashtag',
+              DateTime.parse(created_at)))
           subject.run
         end
       end 

@@ -6,7 +6,7 @@ module Topten
   class HashtagStore
     include LogHelper
 
-    def initialize
+    def initialize()
       @tags = []
       @semaphore = Mutex.new
     end
@@ -18,14 +18,18 @@ module Topten
         @tags << hashtag
         expire(@tags, now)
       end
+      self
     end 
 
     def all
+      now = Time.now
       @semaphore.synchronize do
+        expire(@tags, Time.now)
         @tags.dup
       end
     end
 
+    private
     def expire(tags, now)
       @tags.shift while @tags.first && (now - @tags.first.date.to_time > 60)
     end

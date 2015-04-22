@@ -1,7 +1,7 @@
 module Topten
   class Hashtag
     attr_reader :date, :name
-    def initialize(date, name)
+    def initialize(name, date)
       @date = date
       @name = name
     end

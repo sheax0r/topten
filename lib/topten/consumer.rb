@@ -25,7 +25,7 @@ module Topten
           if date
             date = DateTime.parse json[:created_at]
             json[:entities][:hashtags].each do |tag|
-              tag_store.add(Hashtag.new(date, tag[:text]))
+              tag_store.add(Hashtag.new(tag[:text], date))
             end
           end
         end
