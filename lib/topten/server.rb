@@ -24,7 +24,7 @@ module Topten
     def topten
       tags = tag_store.all.map(&:name)
       freq = tags.inject(Hash.new(0)) { |h,v| h[v] += 1; h }
-      freq.to_a.sort_by{ |f| -f[1] }[0..9].map{ |f| f[0] }
+      freq.to_a.sort_by{ |f| -f[1] }[0..9].map{ |f| {name: f[0], frequency: f[1]} }
     end
 
     def webrick_opts

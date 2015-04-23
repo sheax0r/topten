@@ -18,7 +18,7 @@ module Topten
     }
 
     it 'should return the top 10 most frequent tags' do
-      expect(subject.topten).to eq (11..20).map{|i| "tag-#{i}"}.reverse
+      expect(subject.topten).to eq (11..20).map{|i| {name: "tag-#{i}", frequency: i}}.reverse
     end
   end
 end

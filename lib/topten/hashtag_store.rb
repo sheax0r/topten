@@ -29,6 +29,12 @@ module Topten
       end
     end
 
+    def reset
+      @semaphore.synchronize do
+        @tags.clear
+      end
+    end
+
     private
     def expire(tags, now)
       @tags.shift while @tags.first && (now - @tags.first.date.to_time > 60)

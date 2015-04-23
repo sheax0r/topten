@@ -1,13 +1,18 @@
 require 'net/https'
 require 'uri'
 require 'yaml'
-require 'json'
 require 'topten/log_helper'
 require 'topten/oauth_helper'
 
 module Topten
   class TwitterStream
     include OAuthHelper
+    include LogHelper
+
+    def initialize
+      @state = :pending
+      @semaphore = Mutex.new
+    end
 
     def run(&block)
       uri = URI.parse('https://stream.twitter.com/1.1/statuses/sample.json')
@@ -16,19 +21,34 @@ module Topten
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
       http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-
       request = Net::HTTP::Get.new(uri.request_uri)
       sign_request(request, YAML.load(File.read('oauth.yml')))
 
       stream_buffer = []
       http.request(request) do |response|
+        if Integer(response.code) == 420
+          logger.info("Rate limited. Sleeping for 60 seconds...")
+          sleep(60)
+          raise Retry 
+        end
         response.read_body do |chunk|
           stream_buffer.concat chunk.split(//)
           while (message = next_message stream_buffer)
-            yield message
+            if state == :terminated
+              http.finish
+              break
+            else
+              yield message
+            end
           end
         end
       end
+    rescue Retry
+      retry
+    rescue Zlib::BufError
+      # TODO: Figure out if there's a way to stop this from happening.
+      # We appear to always get a BufError after calling http.finish.
+      # For now, catch it and ignore it.
     end
 
     # Parse the next message from the buffer.
@@ -60,5 +80,19 @@ module Topten
       stream_buffer.shift msg_end + 1
       msg
     end
+
+    def state=(state)
+      @semaphore.synchronize do
+        @state = state
+      end
+    end
+
+    def state
+      @semaphore.synchronize do
+        @state
+      end
+    end
+
+    class Retry < StandardError; end
   end
 end

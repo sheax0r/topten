@@ -8,7 +8,7 @@ module Topten
       let(:credentials) { double 'credentials' }
       let(:http) { double('http') }
       let(:request) { double('request') }
-      let(:response) { double('response') }
+      let(:response) { double('response', code: '200') }
       let(:chunk) { 'chunk' }
 
       before :each do
@@ -21,7 +21,6 @@ module Topten
         allow(http).to receive(:request).with(request) { |_, &block| block.call(response) }
         allow(response).to receive(:read_body){ |_, &block| block.call(chunk) }
         allow(Net::HTTP::Get).to receive(:new).with('/1.1/statuses/sample.json?delimited=length') { request }
-
         # Three messages.
         allow(subject).to receive(:next_message).and_return(
           'message1', 

@@ -6,25 +6,34 @@ RSpec::Core::RakeTask.new('spec')
 
 # Integration tests
 RSpec::Core::RakeTask.new(:integration) do |t|
-  t.pattern = 'integration/*/_spec.rb'
-end
-
-# PoC of twitter stream: Print out twitter status updates forever.
-task :sample do
-  require 'net/https'
-  require 'json'
-  require 'topten/twitter_stream'
-  Topten::TwitterStream.new.run do |msg|
-    puts JSON.parse msg
-  end
+  t.pattern = 'integration/*_spec.rb'
 end
 
 # Run the top10 app
 task :app do
+  File.write('app.pid', Process.pid)
   require 'topten/app'
   Topten::App.new.run
 end
 
-task default: :spec
+# Send signals via rake.
+%i'hup quit int term kill'.each do |sym|
+  task sym do
+    signal(sym.to_s.upcase)
+  end
+end
 
+# Get data from the running app
+task :get do
+  require 'json'
+  require 'open-uri'
+  puts JSON.pretty_generate JSON.parse(open('http://localhost:8000/top10').read)
+end
 
+# Send the given signal to the app process
+def signal(str)
+  pid = File.read('app.pid')
+  system "kill -s #{str} #{pid}"  
+end
+
+task default: [:spec, :integration]
