@@ -6,7 +6,7 @@ require 'topten/oauth_helper'
 require 'topten/twitter_stream'
 
 module Topten
-
+  # Consumer of tweets
   class Consumer
     extend Forwardable
     include Topten::OAuthHelper
@@ -35,5 +35,4 @@ module Topten
       end
     end
   end
-
 end

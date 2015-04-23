@@ -63,7 +63,7 @@ module Topten
       context 'when there is a complete message' do
         let(:buffer) { "5\r\nhello" }
         it 'returns a message' do 
-          expect(next_message).to eq "hello"
+          expect(next_message).to eq 'hello'
           expect(array).to eq []
         end
       end
@@ -71,7 +71,7 @@ module Topten
       context 'when there is data following the message' do
         let(:buffer) { "5\r\nhello\r\n5\r\nagain" }
         it 'leaves the data following the message alone' do 
-          expect(next_message).to eq "hello"
+          expect(next_message).to eq 'hello'
           expect(array).to eq "\r\n5\r\nagain".split(//)
         end
       end
@@ -79,7 +79,7 @@ module Topten
       context 'when there are newlines at the start of the chunk' do
         let(:buffer) { "\r\n\r\n5\r\nhello" }
         it 'trims the newlines and parses the message' do 
-          expect(next_message).to eq "hello"
+          expect(next_message).to eq 'hello'
           expect(array).to eq []
         end
       end

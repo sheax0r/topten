@@ -1,6 +1,7 @@
 require 'logger'
 
 module Topten
+  # Makes logging easy
   module LogHelper
     def logger
       Logger.new(STDOUT).tap do |logger|

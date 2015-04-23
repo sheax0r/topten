@@ -1,5 +1,6 @@
-$: << File.join(__dir__, 'lib')
+$LOAD_PATH << File.join(__dir__, 'lib')
 require 'rspec/core/rake_task'
+require 'rubocop/rake_task'
 
 # Spec tests
 RSpec::Core::RakeTask.new('spec')
@@ -9,6 +10,9 @@ RSpec::Core::RakeTask.new(:integration) do |t|
   t.pattern = 'integration/*_spec.rb'
 end
 
+# Rubocop
+RuboCop::RakeTask.new
+
 # Run the top10 app
 task :app do
   File.write('app.pid', Process.pid)
@@ -17,7 +21,7 @@ task :app do
 end
 
 # Send signals via rake.
-%i'hup quit int term kill'.each do |sym|
+%i(hup quit int term kill).each do |sym|
   task sym do
     signal(sym.to_s.upcase)
   end
@@ -33,7 +37,7 @@ end
 # Send the given signal to the app process
 def signal(str)
   pid = File.read('app.pid')
-  system "kill -s #{str} #{pid}"  
+  system "kill -s #{str} #{pid}"
 end
 
 task default: [:spec, :integration]

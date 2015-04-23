@@ -1,4 +1,5 @@
 module Topten
+  # Essential hashtag info: date + name
   class Hashtag
     attr_reader :date, :name
     def initialize(name, date)

@@ -3,10 +3,11 @@ require 'topten/hashtag'
 require 'topten/log_helper'
 
 module Topten
+  # Hashtag store
   class HashtagStore
     include LogHelper
 
-    def initialize()
+    def initialize
       @tags = []
       @semaphore = Mutex.new
     end
@@ -19,7 +20,7 @@ module Topten
         expire(@tags, now)
       end
       self
-    end 
+    end
 
     def all
       now = Time.now
@@ -36,9 +37,9 @@ module Topten
     end
 
     private
+
     def expire(tags, now)
-      @tags.shift while @tags.first && (now - @tags.first.date.to_time > 60)
+      tags.shift while tags.first && (now - tags.first.date.to_time > 60)
     end
   end
-
 end

@@ -1,27 +1,29 @@
+require 'english'
 require 'json'
 require 'open-uri'
 require 'socket'
 
 describe 'Topten App' do
-
   before :all do
-    run ('rm -rf integration.log')
+    run('rm -rf integration.log')
   end
-
 
   def start_app
     # Start app.
-    Thread.new do |t|
+    Thread.new do
       run('bundle exec rake app >> integration.log 2>&1')
     end
 
     # Wait for it to be ready
     start = Time.now
-    while (Time.now - start < 90) 
-      return if (TCPSocket.open('localhost', port) rescue nil)
-      sleep 1
+    while Time.now - start < 90
+      begin
+        return if TCPSocket.open('localhost', port)
+      rescue
+        sleep 1
+      end
     end
-    fail "App failed to start"
+    fail 'App failed to start'
   end
 
   def port
@@ -30,7 +32,7 @@ describe 'Topten App' do
 
   def run(cmd)
     system(cmd)
-    fail "Failed to execute command" unless $?.exitstatus.zero?
+    fail 'Failed to execute command' unless $CHILD_STATUS.exitstatus.zero?
   end
 
   def top10
@@ -46,15 +48,15 @@ describe 'Topten App' do
     start = Time.now
 
     # Wait longer than the backoff timeout
-    while (Time.now - start < 90) 
+    while Time.now - start < 90
       begin
         Process.getpgid(app_pid)
         sleep(1)
-      rescue Errno::ESRCH 
+      rescue Errno::ESRCH
         return
       end
     end
-    fail "App failed to die"
+    fail 'App failed to die'
   end
 
   describe '#/top10' do
@@ -72,16 +74,16 @@ describe 'Topten App' do
     end
 
     it 'should still run after a hup' do
-      run("bundle exec rake hup")
+      run('bundle exec rake hup')
       expect(top10.class).to eq Array
     end
   end
 
   # Tests for each signal
   describe 'kill signals' do
-    %w'quit int term'.each do |signal|
+    %w(quit int term).each do |signal|
       it "kills the app with #{signal}" do
-        start_app 
+        start_app
         run("bundle exec rake #{signal}")
         wait_for_app_death
       end

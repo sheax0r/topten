@@ -5,6 +5,7 @@ require 'topten/hashtag_store'
 require 'thread'
 
 module Topten
+  # Main app class
   class App
     include Topten::LogHelper
     attr_reader :server, :consumer, :tag_store
@@ -24,36 +25,36 @@ module Topten
       end
 
       [:INT, :TERM].each do |sym|
-        trap(sym){ 
-          Thread.new { 
+        trap(sym) do
+          Thread.new do
             # Hard exit
             logger.info("#{sym} received, exiting")
             exit!
-          }.join
-        }
+          end.join
+        end
       end
 
-      trap(:QUIT){ 
+      trap(:QUIT) do
         # Soft exit: Set consumer state to terminated and wait for it to finish.
-        Thread.new {
+        Thread.new do
           logger.info('QUIT received, exiting gracefully')
           consumer.state = :terminated
-        }.join
-        Thread.new {
+        end.join
+        Thread.new do
           @consumer_thread.join
           exit!
-        }
-      }
+        end
+      end
 
-      trap(:HUP) {
-        Thread.new {
-          @semaphore.synchronize do 
+      trap(:HUP) do
+        Thread.new do
+          @semaphore.synchronize do
             logger.info('HUP received, resetting statistics and stream')
             consumer.state = :terminated
           end
-        }.join
+        end.join
 
-        Thread.new {
+        Thread.new do
           @semaphore.synchronize do
             # Wait for current consumer to finish.
             @consumer_thread.join
@@ -67,8 +68,8 @@ module Topten
               consumer.run
             end
           end
-        }
-      }
+        end
+      end
 
       # Start 'er up.
       server.run

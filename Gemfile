@@ -9,5 +9,5 @@ group :test do
   gem 'simplecov', '~> 0.9'
   gem 'pry', '~> 0.10'
   gem 'pry-byebug', '~> 3.1'
+  gem 'rubocop', '~> 0.30'
 end
-
