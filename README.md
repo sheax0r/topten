@@ -3,11 +3,12 @@ This application exposes an http endpoint that returns a sampling of the
 most popular hashtags tweeted within the past 60 seconds, along with their frequencies. eg:
 ```
 > curl http://localhost:8000/top10
- [{"name":"モンスト","frequency":12},{"name":"DinahDefenseSquad",
- "frequency":10},{"name":"EarthDay","frequency":8},{"name":"Supernatural",
- "frequency":7},{"name":"TeamFollowBack","frequency":6},{"name":"نيك",
- "frequency":5},{"name":"gameinsight","frequency":5},{"name":"MGWV",
- "frequency":5},{"name":"سكس","frequency":4},{"name":"snapchat","frequency":4}]%
+ [{"name":"モンスト","frequency":12},
+ {"name":"DinahDefenseSquad","frequency":10},
+ {"name":"EarthDay","frequency":8},{"name":"Supernatural","frequency":7},
+ {"name":"TeamFollowBack","frequency":6},{"name":"نيك","frequency":5},
+ {"name":"gameinsight","frequency":5},{"name":"MGWV","frequency":5},{"name":"سكس","frequency":4},
+ {"name":"snapchat","frequency":4}]%
 ```
 
 The application has been tested only on OSX. 
